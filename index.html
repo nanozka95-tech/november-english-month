@@ -53,12 +53,48 @@ footer{text-align:center;padding:22px;color:#8991a2;font-size:11px;letter-spacin
     <div class="greeting">♫ Love Story — Indila</div>
     <p style="margin-bottom:20px">Enjoy the instrumental version while exploring our invitation.</p>
     <div style="max-width:620px;margin:0 auto">
-      <audio controls preload="metadata" style="width:100%">
-        <source src="love-story.mp3" type="audio/mpeg">
-        Your browser does not support audio playback.
+      <audio id="loveStoryAudio" preload="auto">
+        <source src="./love-story.mp3" type="audio/mpeg">
       </audio>
+      <button id="loveStoryPlay" class="open-btn" type="button" style="margin:8px auto">▶ Play Love Story</button>
+      <p id="loveStoryStatus" role="status" style="font-size:12px;margin:10px auto 0;color:#6f7890">Tap play to start the music.</p>
     </div>
-    <p style="font-size:12px;margin-top:14px">Press play to listen. Music will not start automatically.</p>
+    <p style="font-size:12px;margin-top:14px">You can pause or resume the music at any time.</p>
+    <script>
+    (() => {
+      const audio = document.getElementById('loveStoryAudio');
+      const button = document.getElementById('loveStoryPlay');
+      const status = document.getElementById('loveStoryStatus');
+      if (!audio || !button || !status) return;
+      button.addEventListener('click', async () => {
+        if (audio.paused) {
+          try {
+            status.textContent = 'Loading music…';
+            await audio.play();
+          } catch (error) {
+            status.textContent = 'Music could not load. Check that love-story.mp3 is uploaded beside index.html in GitHub.';
+          }
+        } else {
+          audio.pause();
+        }
+      });
+      audio.addEventListener('playing', () => {
+        button.textContent = 'Ⅱ Pause Love Story';
+        status.textContent = 'Now playing — Indila';
+      });
+      audio.addEventListener('pause', () => {
+        button.textContent = '▶ Play Love Story';
+        if (!audio.ended) status.textContent = 'Music paused.';
+      });
+      audio.addEventListener('ended', () => {
+        button.textContent = '▶ Play Love Story';
+        status.textContent = 'Playback finished.';
+      });
+      audio.addEventListener('error', () => {
+        status.textContent = 'Audio file not found. Upload love-story.mp3 to the same GitHub folder as index.html.';
+      });
+    })();
+    </script>
   </section>
 
   <section class="intro" id="invitation">
