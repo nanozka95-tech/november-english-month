@@ -34,7 +34,7 @@ footer{text-align:center;padding:22px;color:#8991a2;font-size:11px;letter-spacin
 </style>
 </head>
 <body>
-<button class="music-toggle" id="musicToggle" type="button" aria-pressed="false"><span class="music-dot"></span>♫ Play music</button>
+<a class="music-toggle" href="#music" style="text-decoration:none"><span class="music-dot"></span>♫ Play Love Story</a>
 <section class="hero" id="top">
   <span class="leaf l1">❧</span><span class="leaf l2">❦</span><span class="leaf l3">✦</span>
   <div class="cover">
@@ -47,6 +47,20 @@ footer{text-align:center;padding:22px;color:#8991a2;font-size:11px;letter-spacin
   </div>
 </section>
 <main>
+
+  <section class="invite" id="music" style="margin-top:0;margin-bottom:54px">
+    <div class="small-cap">November English Month soundtrack</div>
+    <div class="greeting">♫ Love Story — Indila</div>
+    <p style="margin-bottom:20px">Enjoy the instrumental version while exploring our invitation.</p>
+    <div style="max-width:620px;margin:0 auto">
+      <audio controls preload="metadata" style="width:100%">
+        <source src="love-story.mp3" type="audio/mpeg">
+        Your browser does not support audio playback.
+      </audio>
+    </div>
+    <p style="font-size:12px;margin-top:14px">Press play to listen. Music will not start automatically.</p>
+  </section>
+
   <section class="intro" id="invitation">
     <div class="small-cap">You are warmly invited</div>
     <h2>Let the English adventure begin</h2>
@@ -81,87 +95,7 @@ footer{text-align:center;padding:22px;color:#8991a2;font-size:11px;letter-spacin
 </main>
 <footer>REGISTAN SCHOOL · NOVEMBER 2026</footer>
 
-<script>
-(() => {
-  const button = document.getElementById('musicToggle');
-  let audioContext = null;
-  let timer = null;
-  let noteIndex = 0;
-  let playing = false;
 
-  // Original, uplifting happy-inspirational instrumental motif created with Web Audio (no external track).
-  const melody = [
-    [523.25, 0.34], [659.25, 0.34], [783.99, 0.42], [1046.50, 0.48],
-    [987.77, 0.34], [880.00, 0.34], [783.99, 0.42], [659.25, 0.48],
-    [587.33, 0.34], [698.46, 0.34], [880.00, 0.42], [1046.50, 0.48],
-    [987.77, 0.34], [880.00, 0.34], [783.99, 0.42], [1046.50, 0.56],
-    [1174.66, 0.34], [1046.50, 0.34], [987.77, 0.42], [783.99, 0.56]
-  ];
-
-  function playNote(frequency, duration) {
-    if (!audioContext || audioContext.state !== 'running') return;
-    const now = audioContext.currentTime;
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    const mellow = audioContext.createOscillator();
-    const mellowGain = audioContext.createGain();
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(frequency, now);
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(0.048, now + 0.04);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.92);
-    osc.connect(gain).connect(audioContext.destination);
-    osc.start(now);
-    osc.stop(now + duration);
-
-    // A soft lower harmony gives the melody a warm, storybook feel.
-    mellow.type = 'sine';
-    mellow.frequency.setValueAtTime(frequency / 2, now);
-    mellowGain.gain.setValueAtTime(0.0001, now);
-    mellowGain.gain.linearRampToValueAtTime(0.022, now + 0.06);
-    mellowGain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.85);
-    mellow.connect(mellowGain).connect(audioContext.destination);
-    mellow.start(now);
-    mellow.stop(now + duration);
-  }
-
-  function step() {
-    const [frequency, duration] = melody[noteIndex];
-    playNote(frequency, duration);
-    noteIndex = (noteIndex + 1) % melody.length;
-  }
-
-  async function startMusic() {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) {
-      button.textContent = 'Music unavailable';
-      return;
-    }
-    audioContext = audioContext || new AudioCtx();
-    await audioContext.resume();
-    playing = true;
-    button.setAttribute('aria-pressed', 'true');
-    button.innerHTML = '<span class="music-dot"></span>♫ Pause music';
-    step();
-    timer = window.setInterval(step, 360);
-  }
-
-  function stopMusic() {
-    playing = false;
-    if (timer) window.clearInterval(timer);
-    timer = null;
-    if (audioContext && audioContext.state === 'running') audioContext.suspend();
-    button.setAttribute('aria-pressed', 'false');
-    button.innerHTML = '<span class="music-dot"></span>♫ Play music';
-  }
-
-  button.addEventListener('click', () => {
-    if (playing) stopMusic();
-    else startMusic();
-  });
-})();
-</script>
 
 </body>
 </html>
