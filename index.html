@@ -28,9 +28,13 @@ main{max-width:1000px;margin:auto;padding:72px 22px 80px}.intro{text-align:cente
 .closing{background:var(--navy);color:#fff;text-align:center;padding:50px 24px;position:relative;overflow:hidden}.closing:before{content:"✦";position:absolute;font-size:150px;color:#d8ad6115;left:5%;top:-35px}.closing h2{font:600 36px 'Playfair Display';margin:0 0 12px}.closing p{color:#d7dce6;line-height:1.7;margin:0}.closing strong{color:#e7c98f}
 footer{text-align:center;padding:22px;color:#8991a2;font-size:11px;letter-spacing:1px}
 @media(max-width:650px){.events{grid-template-columns:1fr}.event{padding:19px}.hero{padding:18px}.cover{padding:42px 20px}.l2{right:3%}}
+
+.music-toggle{position:fixed;z-index:20;top:18px;right:18px;border:1px solid #d8ad61;background:#101f3deF;color:#f6e5c1;padding:11px 15px;border-radius:30px;font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;box-shadow:0 6px 20px #0002}
+.music-toggle:hover{background:#263f68}.music-toggle .music-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#d8ad61;margin-right:7px}
 </style>
 </head>
 <body>
+<button class="music-toggle" id="musicToggle" type="button" aria-pressed="false"><span class="music-dot"></span>♫ Play music</button>
 <section class="hero" id="top">
   <span class="leaf l1">❧</span><span class="leaf l2">❦</span><span class="leaf l3">✦</span>
   <div class="cover">
@@ -62,10 +66,10 @@ footer{text-align:center;padding:22px;color:#8991a2;font-size:11px;letter-spacin
     <div class="events">
       <article class="event"><div class="date"><b>09</b><span>Nov</span></div><div><h3>Opening Ceremony & Quizzes</h3><p>Let’s kick off English Month with energy, teamwork and fun challenges.</p><span class="tag">Kamola · Nargiza</span></div></article>
       <article class="event"><div class="date"><b>11</b><span>Nov</span></div><div><h3>Short Story Quiz</h3><p>Read, think and test your understanding through stories.</p><span class="tag">Ulviya</span></div></article>
-      <article class="event"><div class="date"><b>19</b><span>Nov</span></div><div><h3>Spelling Bee</h3><p>Show your spelling skills and take on the word challenge.</p><span class="tag">Muazzam · Shaxodat</span></div></article>
       <article class="event"><div class="date"><b>17</b><span>Nov</span></div><div><h3>Black Hole: Treasure Hunting</h3><p>Follow the clues, solve the puzzles and find the hidden treasure.</p><span class="tag">Tolib</span></div></article>
+      <article class="event"><div class="date"><b>19</b><span>Nov</span></div><div><h3>Spelling Bee</h3><p>Show your spelling skills and take on the word challenge.</p><span class="tag">Muazzam · Shaxodat</span></div></article>
       <article class="event"><div class="date"><b>19</b><span>Nov</span></div><div><h3>Interview with Teachers</h3><p>Ask curious questions and get to know the people who inspire us.</p><span class="tag">Aygerim</span></div></article>
-      <article class="event"><div class="date"><b>24</b><span>Nov</span></div><div><h3>Class 2 Class Event</h3><p>Connect, collaborate and celebrate learning together.</p><span class="tag">Husnora · Ulviya</span></div></article>
+      <article class="event"><div class="date"><b>24</b><span>Nov</span></div><div><h3>Class 2 Class Event</h3><p>Connect, collaborate and celebrate learning together.</p><span class="tag">Husnora · Mohidil</span></div></article>
       <article class="event"><div class="date"><b>26</b><span>Nov</span></div><div><h3>TEDx</h3><p>Big ideas, confident voices and inspiring talks.</p><span class="tag">Javohir</span></div></article>
     </div>
     <p class="note">Event times and venue details will be announced by the school.</p>
@@ -76,5 +80,88 @@ footer{text-align:center;padding:22px;color:#8991a2;font-size:11px;letter-spacin
   </section>
 </main>
 <footer>REGISTAN SCHOOL · NOVEMBER 2026</footer>
+
+<script>
+(() => {
+  const button = document.getElementById('musicToggle');
+  let audioContext = null;
+  let timer = null;
+  let noteIndex = 0;
+  let playing = false;
+
+  // Original, uplifting happy-inspirational instrumental motif created with Web Audio (no external track).
+  const melody = [
+    [523.25, 0.34], [659.25, 0.34], [783.99, 0.42], [1046.50, 0.48],
+    [987.77, 0.34], [880.00, 0.34], [783.99, 0.42], [659.25, 0.48],
+    [587.33, 0.34], [698.46, 0.34], [880.00, 0.42], [1046.50, 0.48],
+    [987.77, 0.34], [880.00, 0.34], [783.99, 0.42], [1046.50, 0.56],
+    [1174.66, 0.34], [1046.50, 0.34], [987.77, 0.42], [783.99, 0.56]
+  ];
+
+  function playNote(frequency, duration) {
+    if (!audioContext || audioContext.state !== 'running') return;
+    const now = audioContext.currentTime;
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const mellow = audioContext.createOscillator();
+    const mellowGain = audioContext.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(frequency, now);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(0.048, now + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.92);
+    osc.connect(gain).connect(audioContext.destination);
+    osc.start(now);
+    osc.stop(now + duration);
+
+    // A soft lower harmony gives the melody a warm, storybook feel.
+    mellow.type = 'sine';
+    mellow.frequency.setValueAtTime(frequency / 2, now);
+    mellowGain.gain.setValueAtTime(0.0001, now);
+    mellowGain.gain.linearRampToValueAtTime(0.022, now + 0.06);
+    mellowGain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.85);
+    mellow.connect(mellowGain).connect(audioContext.destination);
+    mellow.start(now);
+    mellow.stop(now + duration);
+  }
+
+  function step() {
+    const [frequency, duration] = melody[noteIndex];
+    playNote(frequency, duration);
+    noteIndex = (noteIndex + 1) % melody.length;
+  }
+
+  async function startMusic() {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) {
+      button.textContent = 'Music unavailable';
+      return;
+    }
+    audioContext = audioContext || new AudioCtx();
+    await audioContext.resume();
+    playing = true;
+    button.setAttribute('aria-pressed', 'true');
+    button.innerHTML = '<span class="music-dot"></span>♫ Pause music';
+    step();
+    timer = window.setInterval(step, 360);
+  }
+
+  function stopMusic() {
+    playing = false;
+    if (timer) window.clearInterval(timer);
+    timer = null;
+    if (audioContext && audioContext.state === 'running') audioContext.suspend();
+    button.setAttribute('aria-pressed', 'false');
+    button.innerHTML = '<span class="music-dot"></span>♫ Play music';
+  }
+
+  button.addEventListener('click', () => {
+    if (playing) stopMusic();
+    else startMusic();
+  });
+})();
+</script>
+
 </body>
 </html>
